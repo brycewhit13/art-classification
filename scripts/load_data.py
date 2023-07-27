@@ -26,9 +26,6 @@ def load_data():
             image_bytes = container_client.download_blob(blob.name)
             image = Image.open(io.BytesIO(image_bytes.readall()))
             human_images.append(image)
-            
-        if i == 100:
-            break
     
     # return a list for each dataset
     print("Number of human images: ", len(human_images))

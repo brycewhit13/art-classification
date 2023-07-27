@@ -48,7 +48,6 @@ def process_images():
     return train_dataloader, val_dataloader    
 
 def train_model(train_dataloader, epochs=1):
-    print("Loading the model...")
     # Instantiate the model
     model = resnet50(weights=ResNet50_Weights.DEFAULT)
     # Freeze the layers that are already trained
@@ -60,7 +59,7 @@ def train_model(train_dataloader, epochs=1):
     
     # Define the criterion and optimizer
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     
     # Track the running loss and number of correct predictions
     running_loss = 0
@@ -70,27 +69,28 @@ def train_model(train_dataloader, epochs=1):
     model.train()
     
     for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}-------------------------------")
         for image, label in train_dataloader:
-            print("image shape: ", image.shape)
             # Zero the gradients
             optimizer.zero_grad()
             # Forward pass
             output = model(image.float())
-            pred = torch.argmax(output, dim=1)
+            _, preds = torch.max(output, 1)
             # Calculate the loss
-            loss = criterion(output, label)
+            loss = criterion(output, label.type(torch.LongTensor))
             # Backward pass
             loss.backward()
             # Update the weights
             optimizer.step()
             
             # Update the running loss and number of correct predictions
-            running_loss += loss.item()
-            running_correct += torch.sum(pred == label)
+            if epoch == epochs - 1:
+                running_loss += loss.item()
+                running_correct += torch.sum(preds == label)
             
     # Calculate the average loss and accuracy
     acc = running_correct / len(train_dataloader.dataset)
-    print(f"Training accuracy: {acc}")
+    print(f"Training accuracy: {acc}\n")
             
     # Return the trained model
     return model
@@ -98,40 +98,40 @@ def train_model(train_dataloader, epochs=1):
 def evaluate_model(trained_model, val_dataloader):
     # Define the criterion and optimizer
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(trained_model.parameters(), lr=0.001)
     
     # Track the running loss and number of correct predictions
     running_loss = 0
     running_correct = 0
     
-    # Set the model to eval mode
-    trained_model.eval()
-    
-    for image, label in val_dataloader:
-        # Zero the gradients
-        optimizer.zero_grad()
-        # Forward pass
-        output = trained_model(image)
-        pred = torch.argmax(output, dim=1)
-        # Calculate the loss
-        loss = criterion(output, label)
+    with torch.no_grad():
+        # Set the model to eval mode
+        trained_model.eval()
         
-        # Update the running loss and number of correct predictions
-        running_loss += loss.item()
-        running_correct += torch.sum(pred == label)
+        for image, label in val_dataloader:
+            # Forward pass
+            output = trained_model(image.float())
+            _, preds = torch.max(output, 1)
+            # Calculate the loss
+            loss = criterion(output, label.type(torch.LongTensor))
+            
+            # Update the running loss and number of correct predictions
+            running_loss += loss.item()
+            running_correct += torch.sum(preds == label)
     
     # Print the accuracy
     val_acc = running_correct / len(val_dataloader.dataset)
-    print(f"Validation accuracy: {val_acc}")
+    print(f"Validation accuracy: {val_acc}\n")
     
     
 if __name__ == "__main__":
-    # Load the data
     print("Loading the data...")
     train_dataloader, val_dataloader = process_images()
     
     print("Training the model...")
-    trained_model = train_model(train_dataloader=train_dataloader, epochs=1)
+    trained_model = train_model(train_dataloader=train_dataloader, epochs=2)
     
     print("Evaluating the model...")
     evaluate_model(trained_model=trained_model, val_dataloader=val_dataloader)
+    
+    # Save the model
+    torch.save(trained_model.state_dict(), os.path.join(os.getcwd(), '..', 'models', 'model.pth'))
