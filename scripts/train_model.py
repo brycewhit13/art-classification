@@ -123,6 +123,26 @@ def evaluate_model(trained_model, val_dataloader):
     print(f"Validation accuracy: {val_acc}\n")
     
     
+def make_prediction(trained_model, image):
+    # Pass the image through the model
+    output = trained_model(image.float())
+    pred = torch.argmax(output)
+    
+    # Convert the prediction to a string and return it
+    if pred == 0:
+        return "Human"
+    return "AI"
+
+def make_proba_prediction(trained_model, image):
+    # Pass the image through the model
+    output = trained_model(image.float())
+    probas = torch.nn.functional.softmax(output, dim=1)
+    
+    # Return the probability of the image being AI and human
+    output_dict = {"Human": probas[0][0].item(), "AI": probas[0][1].item()}
+    return output_dict
+    
+    
 if __name__ == "__main__":
     print("Loading the data...")
     train_dataloader, val_dataloader = process_images()
