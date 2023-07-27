@@ -31,6 +31,3 @@ def load_data():
     print("Number of human images: ", len(human_images))
     print("Number of AI images: ", len(ai_images))
     return human_images, ai_images
-    
-#if __name__ == '__main__':
-#    load_data()
