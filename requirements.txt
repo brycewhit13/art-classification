@@ -1,5 +1,6 @@
 azure-storage-blob==12.17.0
 azure-identity==1.13.0
+flask==2.2.3
 numpy==1.25.1
 Pillow==10.0.0
 torchvision==0.15.2
