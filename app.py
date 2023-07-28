@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import torch
 from torchvision.models import resnet50
 from PIL import Image
@@ -69,27 +69,49 @@ def make_proba_prediction(trained_model, image_path):
 # Initialize the app
 app = Flask(__name__)
 
-# Path for user to be able to upload an image
-@app.route("/", methods=["GET", "POST"])
+# Load the trained model
+trained_model = load_trained_model()
+
+# R
+@app.route("/", methods=["GET"])
 def index():
-    raise NotImplementedError()
+    return render_template("index.html")
 
-# Path for the model to make a prediction
-@app.route("/predict", methods=["GET", "POST"])
+# Route to handle the image upload and make predictions
+@app.route("/predict", methods=["POST"])
 def predict():
-    raise NotImplementedError()
+    if "file" not in request.files:
+        return jsonify({"error": "No file part."}), 400
 
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file."}), 400
+
+    # Make the predictions
+    pred = make_prediction(trained_model, file)
+    pred_probas = make_proba_prediction(trained_model, file)
+
+    # Return the results as a response
+    result = {
+        "prediction": pred,
+        "prediction_probabilities": pred_probas
+    }
+    return jsonify(result)
 
 if __name__ == "__main__":
-    #app.run(host='127.0.0.1', port=5000, debug=True)
-    # Load the trained model and image
-    trained_model = load_trained_model()
-    image_path = os.path.join('data', 'ai_art_classification', 'train', 'AI_GENERATED', '1.jpg')
+    app.run(host="127.0.0.1", port=5000, debug=True)
+
+#if __name__ == "__main__":
+    # #app.run(host='127.0.0.1', port=5000, debug=True)
+    # # Load the trained model and image
+    # trained_model = load_trained_model()
+    # #image_path = '/Users/brunovalan/Desktop/valan_headshot.jpg'
+    # image_path = os.path.join('data', 'ai_art_classification', 'train', 'AI_GENERATED', '1.jpg')
     
-    # Make the predictions
-    pred = make_prediction(trained_model, image_path)
-    pred_probas = make_proba_prediction(trained_model, image_path)
+    # # Make the predictions
+    # pred = make_prediction(trained_model, image_path)
+    # pred_probas = make_proba_prediction(trained_model, image_path)
     
-    # Print the results
-    print(f"Prediction: {pred}")
-    print(f"Prediction Probabilities: {pred_probas}")
+    # # Print the results
+    # print(f"Prediction: {pred}")
+    # print(f"Prediction Probabilities: {pred_probas}")
