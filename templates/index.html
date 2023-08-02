@@ -1,14 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Image Upload</title>
+    <title>Image Upload and Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            margin-top: 40px;
+            color: #333;
+        }
+        .upload-container {
+            margin-top: 30px;
+        }
+        .upload-btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-label {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .upload-label:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload an Image</h1>
-    <form action="/predict" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
+    <h1>Image Upload and Prediction</h1>
+    <div class="upload-container">
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <label for="file" class="upload-label">Choose an image</label>
+            <input type="file" name="file" id="file">
+            <input type="submit" value="Upload" class="upload-btn">
+        </form>
+    </div>
 </body>
 </html>
-
