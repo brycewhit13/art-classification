@@ -17,4 +17,4 @@ EXPOSE 8080
 COPY . /app
 
 #Run app
-CMD ["gunicorn", "app:app", "-b", ":8080", "--timeout", "300"]
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
