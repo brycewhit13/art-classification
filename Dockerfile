@@ -17,4 +17,4 @@ EXPOSE 8080
 COPY . /app
 
 #Run app
-CMD ["python", "-m", "flask", "run"]
+CMD ["flask", "run"]
