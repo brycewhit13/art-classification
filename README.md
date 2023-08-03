@@ -21,16 +21,23 @@ To get started with the Microservice ML Endpoint for Artwork Classification on y
 1. Clone the repository from GitHub.
 2. Navigate to the project directory.
 
+```bash
 git clone https://github.com/brycewhit13/art-classification.git
 cd art-classification
+```
 
 3. Install the required dependencies using pip.
 
+```bash
 pip install -r requirements.txt
+```
+
 
 4. Train and run the model using the provided script.
 
+```bash
 python scripts/train_model.py
+```
 
 
 This will initiate the model training process, leveraging the curated dataset to create an accurate artwork classification model. Once the training is complete, the model will be ready for predictions. You can then interact with the ML endpoint by making API requests and obtaining AI-generated or real artwork predictions with ease.
