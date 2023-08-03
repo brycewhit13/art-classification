@@ -12,6 +12,7 @@ This project was developed by Bryce Whitney, Andrew Bonafede, and Bruno Valan as
 
 1. [Local Installation](#local-installation)
 2. [Web Usage](#web-usage)
+3. [Workflows](#workflows)
 
 ### Local Installation
 
@@ -47,3 +48,13 @@ With these simple steps, you can quickly set up the project on your local machin
 ### Web Usage
 
 In addition to be able to run this app locally. The Microservice ML Endpoint for Artwork Classification is also accessible through a web application deployed on Azure at this [link](https://art-classification-webapp2.azurewebsites.net/). Leveraging Azure's robust capabilities, the web app provides a user-friendly interface for users to upload images and receive instant predictions on whether the artwork is AI-generated or real. By utilizing common ML endpoint techniques in Azure, such as containerization and scalable cloud infrastructure, the application ensures high availability and performance, catering to a wide range of users seeking quick and accurate artwork classifications in real-time.
+
+### Workflows
+
+The project also incorporates continuous integration (CI) to streamline the development and deployment process through GitHub Actions. The workflow is defined in the `.github/workflows/main_art-classification-code.yml` file. This workflow is triggered automatically on each push to the `main` branch and can also be manually executed using the GitHub Actions workflow_dispatch event. The CI workflow consists of two jobs: `build` and `deploy`.
+
+The `build` job runs on an Ubuntu environment and handles setting up the Python environment, installing project dependencies specified in `requirements.txt`, and creating a virtual environment to isolate dependencies. Upon successful completion, the build job uploads the project artifacts (excluding the virtual environment) using the `actions/upload-artifact` action.
+
+The `deploy` job is triggered when the `build` job completes successfully and is responsible for deploying the application to Azure Web App. It runs on another Ubuntu environment and first downloads the uploaded artifacts using the `actions/download-artifact` action. Subsequently, it utilizes the Azure Web Apps Deploy action (`azure/webapps-deploy@v2`) to deploy the Python app to the specified Azure Web App named 'art-classification-code' in the 'Production' slot. The deployment is facilitated using the provided Azure publish profile stored securely in the GitHub repository secrets.
+
+By leveraging this CI workflow, developers can confidently push changes to the `main` branch, knowing that the CI process will automatically build, test, and deploy the latest version of the application to the Azure Web App environment, ensuring a seamless and efficient deployment process.
